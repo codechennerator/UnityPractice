@@ -9,6 +9,8 @@ public class PlayerMovements : MonoBehaviour {
     public Transform groundCheckPoint; //A Transform is any object in the scene that can have a position/rotation/scale.
     public float groundCheckRadius;
     public LayerMask groundLayer; //What should the player be able to jump off of?
+    public Vector3 respawnPoint;
+    public LevelManager gameLevelManager;
 
     private float movement = 0f;
     private Rigidbody2D rigidBody;
@@ -19,6 +21,8 @@ public class PlayerMovements : MonoBehaviour {
 	void Start () {
         rigidBody = GetComponent<Rigidbody2D>(); //Makes it so that you don't have to select Rigidbody2D
         playerAnimation = GetComponent<Animator>();
+        respawnPoint = transform.position;
+        gameLevelManager = FindObjectOfType<LevelManager>();
 	}
 	
 	// Update is called once per frame
@@ -56,4 +60,16 @@ public class PlayerMovements : MonoBehaviour {
         playerAnimation.SetFloat("Speed", Mathf.Abs(rigidBody.velocity.x));
         playerAnimation.SetBool("OnGround", isTouchingGround);
 	}
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "FallDetector")
+        {
+            gameLevelManager.Respawn();
+        }
+        if (other.tag == "Checkpoint")
+        {
+            respawnPoint = other.transform.position;
+        }
+       
+    }
 }
